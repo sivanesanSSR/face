@@ -7,6 +7,11 @@
          autoplay
          muted>
   </video>
-  <div #canvas></div>
+  <canvas #canvas></canvas>
 
 </div>
+<button (click)="vidoeEnable()">enable</button>
+
+<button (click)="vidoeDisable()">disable</button>
+
+<button (click)=" takeSnapshot()">snap</button>

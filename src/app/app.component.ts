@@ -1,11 +1,11 @@
-import { Component, ElementRef, NgZone, ViewChild } from '@angular/core';
+import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit{
   title = 'webrtc';
   // if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
   //   // Not adding `{ audio: true }` since we only want video now
@@ -18,9 +18,11 @@ export class AppComponent {
   // }
 
   @ViewChild('video') private video!:ElementRef;
-  
-  constructor(private zone:NgZone)
+  @ViewChild('canvas') private canvas!:ElementRef;
+  ctx:any
+    constructor(private zone:NgZone)
   {  
+    
   this.zone.runOutsideAngular(() => {
       if(navigator.mediaDevices )
         {
@@ -44,6 +46,9 @@ export class AppComponent {
         });
       })
       .catch(err => console.error(err));
+
+
+      
   });
 
     // this.video
@@ -75,6 +80,54 @@ export class AppComponent {
       })
       .catch(err => console.error(err));
   });
+
+  navigator.mediaDevices.getUserMedia({ video: false, audio: true })
+  .then((stream) => {
+      //  this.localStream = stream;
+       // Do something with the stream
+     })
+  .catch((error) => {
+       console.error('Error accessing media devices.', error);
+     });
   }
 
+  vidoeDisable()
+  {
+    if (this.video.nativeElement.srcObject) {
+      this.video.nativeElement.srcObject.getVideoTracks()[0].stop();
+      this.video.nativeElement.srcObject = null;
+    }
+  }
+
+  ngOnInit()
+  {
+    console.log(this.canvas.nativeElement)
+    this.ctx = this.canvas.nativeElement.getContext('2d');
+  }
+  imageCapture:any = null;
+  takeSnapshot()
+  {
+    
+   
+    console.log(this.ctx)
+    this.ctx.drawImage(this.video, 0,0, this.canvas.nativeElement.width, this.canvas.nativeElement.height);
+  }
+
+  // requestPermission()
+  // { this.zone.runOutsideAngular(() => {
+  
+  //     navigator.mediaDevices
+  //       .getUserMedia({ video: false, audio: true })
+  //       .then((stream) => {
+  //         this.localStream = stream // A
+  //         // window.localAudio.srcObject = stream; // B
+  //         // window.localAudio.autoplay = true; // C
+  //       })
+  //       .catch((err) => {
+  //         console.error(`you got an error: ${err}`);
+  //       });
+  // });
+ 
+  // }
+  // localStream!: MediaStream;
 }
